@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Chart Viewer Test</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="keywords" content="Chart Viewer, Project" />
+    <meta name="author" content="Sprintermax" />
+    <meta name="theme-color" content="#1a1a1a" />
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Chart Viewer" />
+    <meta name="description" content="Chart Viewer Project by Sprintermax" />
+
+    <!-- Open Graph -->
+    <!--
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://spmax.dev/">
+        <meta property="og:title" content="Chart Viewer">
+        <meta property="og:site_name" content="Sprintermax">
+        <meta property="og:description" content="Chart Viewer Project by Sprintermax">
+        -->
+
+    <!-- Twitter -->
+    <!--
+        <meta property="twitter:card" content="summary_large_image">
+        <meta property="twitter:creator" content="@Sprintermax">
+        <meta property="twitter:url" content="https://spmax.dev/">
+        <meta property="twitter:title" content="Sprintermax">
+        <meta property="twitter:description" content="Chart Viewer Project by Sprintermax">
+        -->
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body oncontextmenu="return false">
+    <canvas id="screen"></canvas>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+
+      // https://www.npmjs.com/package/read-excel-file
+
+
+
+      /*
+      var Excel = require('exceljs');
+
+var wb = new Excel.Workbook();
+var path = require('path');
+var filePath = path.resolve(__dirname,'sample.xlsx');
+
+wb.xlsx.readFile(filePath).then(function(){
+
+    var sh = wb.getWorksheet("Sheet1");
+
+    sh.getRow(1).getCell(2).value = 32;
+    wb.xlsx.writeFile("sample2.xlsx");
+    console.log("Row-3 | Cell-2 - "+sh.getRow(3).getCell(2).value);
+
+    console.log(sh.rowCount);
+    //Get all the rows data [1st and 2nd column]
+    for (i = 1; i <= sh.rowCount; i++) {
+        console.log(sh.getRow(i).getCell(1).value);
+        console.log(sh.getRow(i).getCell(2).value);
+    }
+});
+      */
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_ana.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(188, 77, 172, 0.2)", "Ganhos da Ana");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_joao.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(31, 239, 121, 0.2)", "Ganhos do João");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_jose.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(247, 215, 136, 0.2)", "Ganhos do José");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_maria.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(78, 57, 127, 0.2)", "Ganhos da Maria");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_matheus.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(133, 201, 8, 0.2)", "Ganhos do Matheus");
+          }
+        });
+      });
+
+      $(document).ready(function () {
+        $.ajax({
+          type: "GET",
+          url: "_pedro.csv",
+          dataType: "text",
+          success: function (data) {
+            processData(data, "rgba(234, 44, 63, 0.2)", "Ganhos do Pedro");
+          }
+        });
+      });
+      
+      const ctx = document.getElementById("screen").getContext("2d");
+      const type = window.location.search.replace("?", "")
+
+      const chart = new Chart(ctx, {
+        type: ['line','bar','radar'].includes(type) ? type : "line",
+        data: {
+          labels: ["01 - dom", "02 - seg", "03 - ter", "04 - qua", "05 - qui", "06 - sex", "07 - sáb", "08 - dom", "09 - seg", "10 - ter", "11 - qua", "12 - qui", "13 - sex", "14 - sáb", "15 - dom", "16 - seg", "17 - ter", "18 - qua", "19 - qui", "20 - sex", "21 - sáb", "22 - dom", "23 - seg"],
+          datasets: [
+            {
+              label: 'Ganhos Projetados',
+              data: ["64.52","129.03","193.55","258.06","322.58","387.10","451.61","516.13","580.65","645.16","709.68","774.19","838.71","903.23","967.74","1032.26","1096.77","1161.29","1225.81","1290.32","1354.84","1419.35","1483.87"],
+              backgroundColor: [ "rgba(54, 162, 235, 0.2)" ],
+              borderColor: [ "rgba(54, 162, 235, 1)" ],
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: false
+            }
+          }
+        }
+      });
+
+      function processData(allText, color, name) {
+        const allTextLines = allText.split(/\r\n|\n/);
+        const headers = allTextLines[0].split(";");
+        const lines = [];
+
+        for (let i = 1; i < allTextLines.length; i++) {
+          const data = allTextLines[i].split(";")
+          if (data.length == headers.length) {
+            const tarr = {};
+            for (let j = 0; j < headers.length; j++) {
+              tarr[headers[j]] =  data[j]
+            }
+            lines.push(tarr["Real Acumulado"]);
+          }
+        }
+        chart.data.datasets.push({
+              label: name,
+              data: lines,
+              backgroundColor: [ color ],
+              borderColor: [ color.replace('0.2', '1') ],
+              borderWidth: 1
+        });
+        chart.update();
+      }
+    </script>
+  </body>
+</html>
